@@ -1,0 +1,17 @@
+Package: cmr
+Title: Common Metadata Repositories (cmr) access
+Description: Tools for working with Common Metadata Repositories (cmr).
+Version: 0.1
+Encoding: UTF-8
+Depends:
+    R (>= 4.1)
+Imports:
+  httr,
+  jsonlite,
+  xml2,
+  yaml
+Maintainer: Ben Tupper <btupper@bigelow.org>
+Author: Ben Tupper <btupper@bigelow.org>
+URL: https://github.com/BigelowLab/cmr
+License: MIT + file LICENSE
+RoxygenNote: 7.1.2
