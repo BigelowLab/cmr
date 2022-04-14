@@ -1,0 +1,59 @@
+---
+title: "cmr"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Programmatic access to [Common Metadata Repositories](https://wiki.earthdata.nasa.gov/display/CMR/Common+Metadata+Repository+Home) from R
+
+## Requirements
+
++ [R v4.1+](https://www.r-project.org/)
+
++ [httr](https://CRAN.R-project.org/package=httr)
++ [base64enc](https://CRAN.R-project.org/package=base64enc)
++ [yaml](https://CRAN.R-project.org/package=yaml)
++ [rlang](https://CRAN.R-project.org/package=rlang)
++ [dplyr](https://CRAN.R-project.org/package=dplyr)
++ [pingr](https://CRAN.R-project.org/package=pingr)
+
+## Installation
+
+```
+remotes::install_github("BigelowLab/cmr")
+```
+
+## And example searching for MUR GHRSST
+
+An example adapted from the [examples](https://cmr.earthdata.nasa.gov/search/site/docs/search/api.html#general-request-details)
+
+Here I switch the example to MUR-GRHSST data set, so I use the MUR collection ID. MUR is posted once per day. We are interested in opendap, so we filter on `^.*OPeNDAP` in the `Description` variable.
+
+```{r}
+suppressPackageStartupMessages({
+  library(cmr)
+  library(dplyr)
+})
+
+x <- search_collection(
+    id = "C1996881146-POCLOUD",
+    times = c("2021-01-01T10:00:00Z","2021-02-01T00:00:00Z"),
+    description_pattern = "all",
+    verbose = TRUE) |>
+  dplyr::filter(grepl("^.*OPeNDAP", Description))
+x
+```
+
+
+Whoopsie!  It seems like there should be about a month's worth of hits (30 or so).  Instead we get only the 10 days (pagination defaults to 10) But where is the pagination information in the response? The header says 32 hits, but that doesn't inform which page.  We could increase the `page-size` from 10 to some higher number, but one would have to know what that is apriori.  Fooey.
+
+
+And it falls apart because `ncdf4::nc_open()` simply passes the url.  It's not really a 'thing' to pass credentials, too.
+
+```{r}
+library(ncdf4)
+nc <- try(nc_open(x$URL[1]))
+```

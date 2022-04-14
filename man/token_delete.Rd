@@ -4,7 +4,7 @@
 \alias{token_delete}
 \title{Delete a token}
 \usage{
-token_delete()
+token_delete(x)
 }
 \arguments{
 \item{x}{credentials list}

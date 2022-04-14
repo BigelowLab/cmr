@@ -6,9 +6,10 @@ Encoding: UTF-8
 Depends:
     R (>= 4.1)
 Imports:
+  rlang,
+  dplyr,
   httr,
-  jsonlite,
-  xml2,
+  pingr,
   yaml
 Maintainer: Ben Tupper <btupper@bigelow.org>
 Author: Ben Tupper <btupper@bigelow.org>

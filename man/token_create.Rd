@@ -6,7 +6,7 @@
 \usage{
 token_create(
   x = read_credentials(),
-  uri = api_base("ops", segments = "legacy-services/rest/tokens")
+  uri = api_base("ops", segments = "api/users/token")
 )
 }
 \arguments{

@@ -32,7 +32,7 @@ token_create <- function(x = read_credentials(),
 #' Delete a token
 #' @export
 #' @param x credentials list 
-token_delete <- function(){
+token_delete <- function(x){
   # nothing yet
 }
 

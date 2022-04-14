@@ -2,6 +2,10 @@
 
 export(api_base)
 export(read_credentials)
+export(search_collection)
 export(token_create)
 export(token_delete)
 export(write_credentials)
+importFrom(rlang,"!!")
+importFrom(rlang,":=")
+importFrom(rlang,.data)
