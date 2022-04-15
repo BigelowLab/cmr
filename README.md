@@ -25,14 +25,13 @@ from R
 
     remotes::install_github("BigelowLab/cmr")
 
-## And example searching for MUR GHRSST
+## Searching
 
-An example adapted from the
-[examples](https://cmr.earthdata.nasa.gov/search/site/docs/search/api.html#general-request-details)
+The search process has 3 steps… (1) craft the URL, (2) make a request
+and capture the response and (3) extract the links to the various
+datasets.
 
-Here I switch the example to MUR-GRHSST data set, so I use the MUR
-collection ID. MUR is posted once per day. We are interested in opendap,
-so we filter on `^.*OPeNDAP` in the `Description` variable.
+### Craft the URL
 
 ``` r
 suppressPackageStartupMessages({
@@ -43,12 +42,78 @@ suppressPackageStartupMessages({
 x <- search_collection(
     id = "C1996881146-POCLOUD",
     times = c("2021-01-01T10:00:00Z","2021-02-01T00:00:00Z"),
-    description_pattern = "all",
-    verbose = TRUE) |>
-  dplyr::filter(grepl("^.*OPeNDAP", Description))
+    form = 'url')
+
+x
 ```
 
-    ## search_collection url = https://cmr.earthdata.nasa.gov/search/granules.umm_json?collection_concept_id=C1996881146-POCLOUD&temporal=2021-01-01T10:00:00Z,2021-02-01T00:00:00Z
+    ## [1] "https://cmr.earthdata.nasa.gov/search/granules.umm_json?collection_concept_id=C1996881146-POCLOUD&temporal=2021-01-01T10:00:00Z,2021-02-01T00:00:00Z"
+
+### Making the request
+
+With a suitable browser, you can make the request and see the results.
+But if your browser doesn’t do pretty renderings of JSON data then is
+isn’t worth it.
+
+    # httr::BROWSE(x) - for browsing, pretty nice in Firefox
+
+But without using a browser, we can extract the interesting bits -
+namely the links to the data.
+
+``` r
+resp <- httr::GET(x)
+resp
+```
+
+    ## Response [https://cmr.earthdata.nasa.gov/search/granules.umm_json?collection_concept_id=C1996881146-POCLOUD&temporal=2021-01-01T10:00:00Z,2021-02-01T00:00:00Z]
+    ##   Date: 2022-04-15 00:34
+    ##   Status: 200
+    ##   Content-Type: application/vnd.nasa.cmr.umm_results+json;version=1.6.4; charset=utf-8
+    ##   Size: 31.7 kB
+    ## <BINARY BODY>
+
+### Unpack the request
+
+Here we unpack the response.
+
+``` r
+links <- extract_collection(resp)
+links
+```
+
+    ## # A tibble: 60 × 4
+    ##    URL                                                 Type  Description Subtype
+    ##    <chr>                                               <chr> <chr>       <chr>  
+    ##  1 s3://podaac-ops-cumulus-protected/MUR-JPL-L4-GLOB-… GET … This link … <NA>   
+    ##  2 https://archive.podaac.earthdata.nasa.gov/podaac-o… EXTE… Download 2… <NA>   
+    ##  3 https://archive.podaac.earthdata.nasa.gov/podaac-o… GET … Download 2… <NA>   
+    ##  4 https://archive.podaac.earthdata.nasa.gov/podaac-o… EXTE… Download 2… <NA>   
+    ##  5 https://archive.podaac.earthdata.nasa.gov/s3creden… VIEW… api endpoi… <NA>   
+    ##  6 https://opendap.earthdata.nasa.gov/providers/POCLO… USE … OPeNDAP re… OPENDA…
+    ##  7 s3://podaac-ops-cumulus-protected/MUR-JPL-L4-GLOB-… GET … This link … <NA>   
+    ##  8 https://archive.podaac.earthdata.nasa.gov/podaac-o… GET … Download 2… <NA>   
+    ##  9 https://archive.podaac.earthdata.nasa.gov/podaac-o… EXTE… Download 2… <NA>   
+    ## 10 https://archive.podaac.earthdata.nasa.gov/podaac-o… EXTE… Download 2… <NA>   
+    ## # … with 50 more rows
+
+## Combine the three steps into one
+
+An example adapted from the
+[examples](https://cmr.earthdata.nasa.gov/search/site/docs/search/api.html#general-request-details)
+
+Here I switch the example to MUR-GRHSST data set, so I use the MUR
+collection ID. MUR is posted once per day. We are interested in opendap,
+so we filter on `^.*OPeNDAP` in the `Description` variable.
+
+``` r
+x <- search_collection(
+    id = "C1996881146-POCLOUD",
+    times = c("2021-01-01T10:00:00Z","2021-02-01T00:00:00Z"),
+    description_pattern = "^.*OPeNDAP",
+    verbose = TRUE) 
+```
+
+    ## search_collection URL: https://cmr.earthdata.nasa.gov/search/granules.umm_json?collection_concept_id=C1996881146-POCLOUD&temporal=2021-01-01T10:00:00Z,2021-02-01T00:00:00Z
 
 ``` r
 x
@@ -68,12 +133,7 @@ x
     ##  9 https://opendap.earthdata.nasa.gov/providers/POCLO… USE … OPeNDAP re… OPENDA…
     ## 10 https://opendap.earthdata.nasa.gov/providers/POCLO… USE … OPeNDAP re… OPENDA…
 
-Whoopsie! It seems like there should be about a month’s worth of hits
-(30 or so). Instead we get only the 10 days (pagination defaults to 10)
-But where is the pagination information in the response? The header says
-32 hits, but that doesn’t inform which page. We could increase the
-`page-size` from 10 to some higher number, but one would have to know
-what that is apriori. Fooey.
+## Open the OPeNDAP resource
 
 And it falls apart because `ncdf4::nc_open()` simply passes the url.
 It’s not really a ‘thing’ to pass credentials, too.

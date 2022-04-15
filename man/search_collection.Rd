@@ -8,8 +8,8 @@ search_collection(
   id = "C1996881146-POCLOUD",
   times = c("2019-01-01T10:00:00Z", "2019-02-01T00:00:00Z"),
   base_url = api_base(name = "ops", segments = "search/granules.umm_json"),
-  description_pattern = "^.*OPeNDAP",
   verbose = FALSE,
+  form = c("response", "table", "url")[2],
   ...
 )
 }
@@ -21,21 +21,16 @@ NULL to skip}
 
 \item{base_url}{character, the base URL for searching}
 
-\item{description_pattern}{character, one or more regular expressions with which
-to filter the 'Description' variable.  Or "all" to skip filtering.}
-
 \item{verbose}{logical, if TRUE print the URL}
 
-\item{...}{extra arguments for \code{\link[base]{grepl}} such as \code{fixed}}
+\item{form}{character, "response" to return a \code{\link{httr}{response}} object,
+"url" to retrieve the charcater URL, or 
+"table" to extract a table of links}
+
+\item{...}{extra arguments for \code{\link{collection_extract}}}
 }
 \value{
-tibble of related URLs and descriptions
-\itemize{
-\item{URL, the url}
-\item{Type, describes the type of protocol for access}
-\item{Description, a verbose description}
-\item{Subtype, not really sure what this is}
-}
+\code{\link{httr}{response}} object, a tibble as per \code{\link{collection_extract}}
 }
 \description{
 Search a collection

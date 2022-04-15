@@ -26,11 +26,11 @@ Programmatic access to [Common Metadata Repositories](https://wiki.earthdata.nas
 remotes::install_github("BigelowLab/cmr")
 ```
 
-## And example searching for MUR GHRSST
+## Searching
 
-An example adapted from the [examples](https://cmr.earthdata.nasa.gov/search/site/docs/search/api.html#general-request-details)
+The search process has 3 steps... (1) craft the URL, (2) make a request and capture the response and (3) extract the links to the various datasets.
 
-Here I switch the example to MUR-GRHSST data set, so I use the MUR collection ID. MUR is posted once per day. We are interested in opendap, so we filter on `^.*OPeNDAP` in the `Description` variable.
+### Craft the URL
 
 ```{r}
 suppressPackageStartupMessages({
@@ -41,15 +41,51 @@ suppressPackageStartupMessages({
 x <- search_collection(
     id = "C1996881146-POCLOUD",
     times = c("2021-01-01T10:00:00Z","2021-02-01T00:00:00Z"),
-    description_pattern = "all",
-    verbose = TRUE) |>
-  dplyr::filter(grepl("^.*OPeNDAP", Description))
+    form = 'url')
+
+x
+```
+
+### Making the request
+
+With a suitable browser, you can make the request and see the results. But if your browser doesn't do pretty renderings of JSON data then is isn't worth it.   
+
+```
+# httr::BROWSE(x) - for browsing, pretty nice in Firefox
+```
+
+But without using a browser, we can extract the interesting bits - namely the links to the data.
+
+```{r}
+resp <- httr::GET(x)
+resp
+```
+
+### Unpack the request
+
+Here we unpack the response. 
+```{r}
+links <- extract_collection(resp)
+links
+```
+
+## Combine the three steps into one
+
+An example adapted from the [examples](https://cmr.earthdata.nasa.gov/search/site/docs/search/api.html#general-request-details)
+
+Here I switch the example to MUR-GRHSST data set, so I use the MUR collection ID. MUR is posted once per day. We are interested in opendap, so we filter on `^.*OPeNDAP` in the `Description` variable.
+
+```{r}
+x <- search_collection(
+    id = "C1996881146-POCLOUD",
+    times = c("2021-01-01T10:00:00Z","2021-02-01T00:00:00Z"),
+    description_pattern = "^.*OPeNDAP",
+    verbose = TRUE) 
 x
 ```
 
 
-Whoopsie!  It seems like there should be about a month's worth of hits (30 or so).  Instead we get only the 10 days (pagination defaults to 10) But where is the pagination information in the response? The header says 32 hits, but that doesn't inform which page.  We could increase the `page-size` from 10 to some higher number, but one would have to know what that is apriori.  Fooey.
-
+## Open the OPeNDAP resource
 
 And it falls apart because `ncdf4::nc_open()` simply passes the url.  It's not really a 'thing' to pass credentials, too.
 
