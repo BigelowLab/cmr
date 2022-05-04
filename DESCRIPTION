@@ -10,7 +10,9 @@ Imports:
   dplyr,
   httr,
   pingr,
-  yaml
+  yaml,
+  xml2,
+  crul
 Maintainer: Ben Tupper <btupper@bigelow.org>
 Author: Ben Tupper <btupper@bigelow.org>
 URL: https://github.com/BigelowLab/cmr

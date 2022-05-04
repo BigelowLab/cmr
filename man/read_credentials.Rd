@@ -4,10 +4,20 @@
 \alias{read_credentials}
 \title{Read a credentials for EarthData}
 \usage{
-read_credentials(filename = "~/.earthdata")
+read_credentials(
+  filename = "~/.earthdata",
+  client_id = system2("whoami", stdout = TRUE),
+  user_ip_address = pingr::my_ip(),
+  form = c("list", "xml", "xml-string")[1]
+)
 }
 \arguments{
 \item{filename}{char, the name of the credentials file}
+
+\item{client_id}{character, can be anyhting, defaults to user name}
+
+\item{user_ip_address}{character, defaults to that provided by 
+\code{\link[pingr]{my_ip}}}
 }
 \value{
 named list of credentials

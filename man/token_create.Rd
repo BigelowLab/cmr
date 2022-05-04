@@ -6,17 +6,25 @@
 \usage{
 token_create(
   x = read_credentials(),
-  uri = api_base("ops", segments = "api/users/token")
+  verbose = FALSE,
+  uri = api_base("ops", segments = "legacy-services/rest/tokens")
 )
 }
 \arguments{
 \item{x}{credentials list}
 
+\item{verbose}{logical, if TRUE echo the command string}
+
 \item{uri}{character, the URL}
+
+\item{use}{character one of 'curl' or 'httr'}
 }
 \value{
-token or NULL if fails
+character token or NULL if fails
 }
 \description{
 Create a token
+}
+\seealso{
+\href{https://wiki.earthdata.nasa.gov/display/CMR/CMR+Client+Partner+User+Guide#CMRClientPartnerUserGuide-Chapter2:GettingStarted}{CMR guide}
 }

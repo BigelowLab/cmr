@@ -4,11 +4,22 @@
 \alias{token_delete}
 \title{Delete a token}
 \usage{
-token_delete(x)
+token_delete(
+  x = read_credentials(),
+  uri = api_base("ops", segments = "legacy-services/rest/tokens"),
+  verbose = FALSE
+)
 }
 \arguments{
 \item{x}{credentials list}
+
+\item{uri}{character, the URL}
+
+\item{verbose}{logical, if TRUE echo the command string}
 }
 \description{
 Delete a token
+}
+\seealso{
+\href{https://wiki.earthdata.nasa.gov/display/CMR/CMR+Client+Partner+User+Guide#CMRClientPartnerUserGuide-Chapter2:GettingStarted}{CMR guide}
 }
