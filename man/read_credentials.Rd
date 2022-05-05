@@ -18,6 +18,8 @@ read_credentials(
 
 \item{user_ip_address}{character, defaults to that provided by 
 \code{\link[pingr]{my_ip}}}
+
+\item{form}{character, one of 'list', "xml" or "xml-string"}
 }
 \value{
 named list of credentials

@@ -11,8 +11,7 @@ Imports:
   httr,
   pingr,
   yaml,
-  xml2,
-  crul
+  xml2
 Maintainer: Ben Tupper <btupper@bigelow.org>
 Author: Ben Tupper <btupper@bigelow.org>
 URL: https://github.com/BigelowLab/cmr

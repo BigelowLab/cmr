@@ -16,8 +16,6 @@ token_create(
 \item{verbose}{logical, if TRUE echo the command string}
 
 \item{uri}{character, the URL}
-
-\item{use}{character one of 'curl' or 'httr'}
 }
 \value{
 character token or NULL if fails

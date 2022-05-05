@@ -26,8 +26,8 @@ api_base <- function(name = 'ops',
 #' @param form character, "response" to return a \code{\link{httr}{response}} object,
 #'   "url" to retrieve the charcater URL, or 
 #'   "table" to extract a table of links
-#' @param ... extra arguments for \code{\link{collection_extract}}
-#' @return \code{\link{httr}{response}} object, a tibble as per \code{\link{collection_extract}}
+#' @param ... extra arguments for \code{\link{extract_collection}}
+#' @return \code{\link{httr}{response}} object, a tibble as per \code{\link{extract_collection}}
 search_collection <- function(id = "C1996881146-POCLOUD",
   times = c("2019-01-01T10:00:00Z","2019-02-01T00:00:00Z"),
   base_url = api_base(name = "ops", segments = "search/granules.umm_json"),

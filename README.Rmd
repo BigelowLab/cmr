@@ -30,7 +30,7 @@ remotes::install_github("BigelowLab/cmr")
 
 The search process has 3 steps... (1) craft the URL, (2) make a request and capture the response and (3) extract the links to the various datasets.
 
-### Craft the URL
+#### Craft the URL
 
 ```{r}
 suppressPackageStartupMessages({
@@ -46,7 +46,7 @@ x <- search_collection(
 x
 ```
 
-### Making the request
+#### Making the request
 
 With a suitable browser, you can make the request and see the results. But if your browser doesn't do pretty renderings of JSON data then is isn't worth it.   
 
@@ -61,7 +61,7 @@ resp <- httr::GET(x)
 resp
 ```
 
-### Unpack the request
+#### Unpack the request
 
 Here we unpack the response. 
 ```{r}
@@ -69,7 +69,7 @@ links <- extract_collection(resp)
 links
 ```
 
-## Combine the three steps into one
+#### Combine the three steps into one
 
 An example adapted from the [examples](https://cmr.earthdata.nasa.gov/search/site/docs/search/api.html#general-request-details)
 
@@ -82,6 +82,37 @@ x <- search_collection(
     description_pattern = "^.*OPeNDAP",
     verbose = TRUE) 
 x
+```
+
+
+## Getting a token
+
+In order to access the data, once you have found it, you need credentials.  CMR provides for a username-password combination to obtain a temporary token. For each session you can obtain a token, do you stuff, and then delete the token. Store you username and password in a text file called `.earthdata` and save it in your home directory.  It should contain two items like this...
+
+```
+username: htubman
+password: xxxxxxxxxxxxxxxxxxxxxxx
+```
+
+Read the credentails, extra info will be added to your username and password.
+
+```{r}
+creds <- read_credentials()
+creds
+```
+
+Now get a token.
+
+```{r}
+creds <- get_token(creds)
+creds
+```
+
+After you have done you work, delete the token
+
+```{r}
+creds <- token_delete(creds)
+creds
 ```
 
 

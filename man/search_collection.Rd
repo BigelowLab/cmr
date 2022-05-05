@@ -27,10 +27,10 @@ NULL to skip}
 "url" to retrieve the charcater URL, or 
 "table" to extract a table of links}
 
-\item{...}{extra arguments for \code{\link{collection_extract}}}
+\item{...}{extra arguments for \code{\link{extract_collection}}}
 }
 \value{
-\code{\link{httr}{response}} object, a tibble as per \code{\link{collection_extract}}
+\code{\link{httr}{response}} object, a tibble as per \code{\link{extract_collection}}
 }
 \description{
 Search a collection

@@ -1,6 +1,7 @@
 #' Get a token
 #' 
 #' @seealso \href{https://wiki.earthdata.nasa.gov/display/CMR/CMR+Client+Partner+User+Guide#CMRClientPartnerUserGuide-Chapter2:GettingStarted}{CMR guide}
+#'
 #' @export
 #' @param x credentials list
 #' @param delete logical if TRUE delete exisiting token (if it exists) first
@@ -28,21 +29,20 @@ has_token <- function(x = read_credentials()){
 #' @param x credentials list
 #' @param uri character, the URL
 #' @param verbose logical, if TRUE echo the command string
-#' @param use character one of 'curl' or 'httr'
 #' @return character token or NULL if fails
 token_create <- function(x = read_credentials(),
                          verbose = FALSE,
                          uri = api_base("ops", segments = "legacy-services/rest/tokens")){
 
   y <- x[!(names(x) %in% "token")]
-  resp <- POST(uri,  
+  resp <- httr::POST(uri,  
                body = as_xml_string(y),
-               content_type_xml())
+               httr::content_type_xml())
   
   if (httr::http_error(resp)) {
     print(resp)
     warning(sprintf("error POSTing for token: %s"), uri)
-    retunr(NULL)
+    return(NULL)
   }
   
   r <- httr::content(resp)$token[['id']]  
@@ -80,12 +80,29 @@ token_delete <- function(x = read_credentials(),
   if (httr::http_error(resp)) {
     print(resp)
     warning(sprintf("error DELETEing token: %s"), uri)
-    retunr(NULL)
+    return(NULL)
   }
   x[['token']] <- character()
   
   x
 }
+
+#' Print credentials by default redacted (for README)
+#' 
+#' @export
+#' @param x credentials object
+#' @param redact logical, by default redact sensitive information
+#' @param ... other arguments for the print method
+print.cmr_credentials <- function(x, redact = TRUE, ...){
+  if (redact){
+    x$password <- "..redacted.."
+    if ("user_ip_address" %in% names(x)) x$user_ip_address <- "..redacted.."
+    if ("token" %in% names(x) && length(x$token > 0)) x$token <- "..redacted.."
+  }
+  class(x) <- "list"
+  print(x)
+}
+
 
 #' Read a credentials for EarthData
 #' 
@@ -99,6 +116,7 @@ token_delete <- function(x = read_credentials(),
 #' @param client_id character, can be anyhting, defaults to user name
 #' @param user_ip_address character, defaults to that provided by 
 #'   \code{\link[pingr]{my_ip}}
+#' @param form character, one of 'list', "xml" or "xml-string"
 #' @return named list of credentials
 read_credentials <- function(filename = "~/.earthdata",
                              client_id = system2("whoami", stdout = TRUE),
@@ -107,6 +125,7 @@ read_credentials <- function(filename = "~/.earthdata",
   x <- c(yaml::read_yaml(filename[1]), 
          client_id = client_id, 
          user_ip_address = user_ip_address)
+  class(x) <- c("cmr_credentials", class(x))
   switch(tolower(form[1]),
          "xml" = as_xml(x),
          "xml-string" = as_xml_string(x),

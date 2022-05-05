@@ -31,7 +31,7 @@ The search process has 3 steps… (1) craft the URL, (2) make a request
 and capture the response and (3) extract the links to the various
 datasets.
 
-### Craft the URL
+#### Craft the URL
 
 ``` r
 suppressPackageStartupMessages({
@@ -49,7 +49,7 @@ x
 
     ## [1] "https://cmr.earthdata.nasa.gov/search/granules.umm_json?collection_concept_id=C1996881146-POCLOUD&temporal=2021-01-01T10:00:00Z,2021-02-01T00:00:00Z"
 
-### Making the request
+#### Making the request
 
 With a suitable browser, you can make the request and see the results.
 But if your browser doesn’t do pretty renderings of JSON data then is
@@ -66,13 +66,13 @@ resp
 ```
 
     ## Response [https://cmr.earthdata.nasa.gov/search/granules.umm_json?collection_concept_id=C1996881146-POCLOUD&temporal=2021-01-01T10:00:00Z,2021-02-01T00:00:00Z]
-    ##   Date: 2022-04-15 00:34
+    ##   Date: 2022-05-05 12:49
     ##   Status: 200
     ##   Content-Type: application/vnd.nasa.cmr.umm_results+json;version=1.6.4; charset=utf-8
     ##   Size: 31.7 kB
     ## <BINARY BODY>
 
-### Unpack the request
+#### Unpack the request
 
 Here we unpack the response.
 
@@ -96,7 +96,7 @@ links
     ## 10 https://archive.podaac.earthdata.nasa.gov/podaac-o… EXTE… Download 2… <NA>   
     ## # … with 50 more rows
 
-## Combine the three steps into one
+#### Combine the three steps into one
 
 An example adapted from the
 [examples](https://cmr.earthdata.nasa.gov/search/site/docs/search/api.html#general-request-details)
@@ -133,6 +133,82 @@ x
     ##  9 https://opendap.earthdata.nasa.gov/providers/POCLO… USE … OPeNDAP re… OPENDA…
     ## 10 https://opendap.earthdata.nasa.gov/providers/POCLO… USE … OPeNDAP re… OPENDA…
 
+## Getting a token
+
+In order to access the data, once you have found it, you need
+credentials. CMR provides for a username-password combination to obtain
+a temporary token. For each session you can obtain a token, do you
+stuff, and then delete the token. Store you username and password in a
+text file called `.earthdata` and save it in your home directory. It
+should contain two items like this…
+
+    username: htubman
+    password: xxxxxxxxxxxxxxxxxxxxxxx
+
+Read the credentails, extra info will be added to your username and
+password.
+
+``` r
+creds <- read_credentials()
+creds
+```
+
+    ## $username
+    ## [1] "btupper"
+    ## 
+    ## $password
+    ## [1] "..redacted.."
+    ## 
+    ## $client_id
+    ## [1] "btupper"
+    ## 
+    ## $user_ip_address
+    ## [1] "..redacted.."
+
+Now get a token.
+
+``` r
+creds <- get_token(creds)
+creds
+```
+
+    ## $username
+    ## [1] "btupper"
+    ## 
+    ## $password
+    ## [1] "..redacted.."
+    ## 
+    ## $client_id
+    ## [1] "btupper"
+    ## 
+    ## $user_ip_address
+    ## [1] "..redacted.."
+    ## 
+    ## $token
+    ## [1] "..redacted.."
+
+After you have done you work, delete the token
+
+``` r
+creds <- token_delete(creds)
+creds
+```
+
+    ## $username
+    ## [1] "btupper"
+    ## 
+    ## $password
+    ## [1] "..redacted.."
+    ## 
+    ## $client_id
+    ## [1] "btupper"
+    ## 
+    ## $user_ip_address
+    ## [1] "..redacted.."
+    ## 
+    ## $token
+    ## character(0)
+
 ## Open the OPeNDAP resource
 
 And it falls apart because `ncdf4::nc_open()` simply passes the url.
@@ -143,6 +219,6 @@ library(ncdf4)
 nc <- try(nc_open(x$URL[1]))
 ```
 
-    ## Error in R_nc4_open: NetCDF: Authorization failure
+    ## Error in R_nc4_open: NetCDF: Access failure
     ## Error in nc_open(x$URL[1]) : 
     ##   Error in nc_open trying to open file https://opendap.earthdata.nasa.gov/providers/POCLOUD/collections/GHRSST%20Level%204%20MUR%20Global%20Foundation%20Sea%20Surface%20Temperature%20Analysis%20(v4.1)/granules/20210101090000-JPL-L4_GHRSST-SSTfnd-MUR-GLOB-v02.0-fv04.1 (return_on_error= FALSE )
