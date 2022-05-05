@@ -5,7 +5,7 @@
 \title{Read a credentials for EarthData}
 \usage{
 read_credentials(
-  filename = "~/.earthdata",
+  filename = "~/.netrc",
   client_id = system2("whoami", stdout = TRUE),
   user_ip_address = pingr::my_ip(),
   form = c("list", "xml", "xml-string")[1]

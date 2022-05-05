@@ -118,11 +118,18 @@ print.cmr_credentials <- function(x, redact = TRUE, ...){
 #'   \code{\link[pingr]{my_ip}}
 #' @param form character, one of 'list', "xml" or "xml-string"
 #' @return named list of credentials
-read_credentials <- function(filename = "~/.earthdata",
+read_credentials <- function(filename = "~/.netrc",
                              client_id = system2("whoami", stdout = TRUE),
                              user_ip_address = pingr::my_ip(),
                              form = c('list', "xml", "xml-string")[1]){
-  x <- c(yaml::read_yaml(filename[1]), 
+  txt <- readLines(filename) |>
+    trimws(which = "both") |>
+    strsplit(" ", fixed = TRUE)
+  len <- lengths(txt)
+  
+  x <- list(
+         username = txt[[2]][len[2]],
+         password = txt[[3]][len[3]],
          client_id = client_id, 
          user_ip_address = user_ip_address)
   class(x) <- c("cmr_credentials", class(x))
@@ -132,15 +139,6 @@ read_credentials <- function(filename = "~/.earthdata",
          x)
 }
 
-save_credentials <- function(x, filename = "~/.earthdata"){
-  must_have <- c("username", "password", "token")
-  y <- x[names(x) %in% must_have]
-  if (!all(names(y) %in% must_have)){
-    stop("credentials must have", paste(must_have, collapse = ", "))
-  }
-  yaml::write_yaml(y, filename)
-  x
-}
 
 #' Given a credentials list, convert to an xml node
 #' 
@@ -163,24 +161,6 @@ as_xml_string <- function(x = read_credentials()){
   tmp <- tempfile(fileext = ".xml")
   xml2::write_xml(node, tmp, options = "format")
   readLines(tmp)[-1] |> trimws(which = "both") |> paste(collapse = "")
-}
-
-
-
-#' Write a credentials for EarthData
-#' 
-#' Credential files should have three lines
-#' username: <user_name>
-#' password: <password>
-#' token: <token_value>
-#' 
-#' @export
-#' @param x named list of credentials
-#' @param filename char, the name of the credentials file
-#' @return the input list
-write_credentials <- function(x, filename = "~/.earthdata"){
-  yaml::write_yaml(x, filename[1])
-  x
 }
 
 

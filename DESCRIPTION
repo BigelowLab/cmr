@@ -10,7 +10,6 @@ Imports:
   dplyr,
   httr,
   pingr,
-  yaml,
   xml2
 Maintainer: Ben Tupper <btupper@bigelow.org>
 Author: Ben Tupper <btupper@bigelow.org>
