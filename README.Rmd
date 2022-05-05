@@ -87,14 +87,15 @@ x
 
 ## Getting a token
 
-In order to access the data, once you have found it, you need credentials.  CMR provides for a username-password combination to obtain a temporary token. For each session you can obtain a token, do you stuff, and then delete the token. Store you username and password in a text file called `.earthdata` and save it in your home directory.  It should contain two items like this...
+In order to access the data, once you have found it, you need credentials.  CMR provides for a username-password combination to obtain a temporary token. For each session you can obtain a token, do you stuff, and then delete the token. Store you username and password in a text file called `.netrc` and save it in your home directory.  It should contain three items like this, but obviously with your own username and password. Read more about the configuration file [here](https://github.com/podaac/data-subscriber/blob/main/Subscriber.md).
 
 ```
-username: htubman
-password: xxxxxxxxxxxxxxxxxxxxxxx
+machine urs.earthdata.nasa.gov
+  username htubman
+  password  xxxxxxxxxxxxxxxxxxxxxxx
 ```
 
-Read the credentails, extra info will be added to your username and password.
+Read the credentials, extra info will be added to your username and password.
 
 ```{r}
 creds <- read_credentials()

@@ -66,7 +66,7 @@ resp
 ```
 
     ## Response [https://cmr.earthdata.nasa.gov/search/granules.umm_json?collection_concept_id=C1996881146-POCLOUD&temporal=2021-01-01T10:00:00Z,2021-02-01T00:00:00Z]
-    ##   Date: 2022-05-05 12:49
+    ##   Date: 2022-05-05 20:57
     ##   Status: 200
     ##   Content-Type: application/vnd.nasa.cmr.umm_results+json;version=1.6.4; charset=utf-8
     ##   Size: 31.7 kB
@@ -139,13 +139,16 @@ In order to access the data, once you have found it, you need
 credentials. CMR provides for a username-password combination to obtain
 a temporary token. For each session you can obtain a token, do you
 stuff, and then delete the token. Store you username and password in a
-text file called `.earthdata` and save it in your home directory. It
-should contain two items like this…
+text file called `.netrc` and save it in your home directory. It should
+contain three items like this, but obviously with your own username and
+password. Read more about the configuration file
+[here](https://github.com/podaac/data-subscriber/blob/main/Subscriber.md).
 
-    username: htubman
-    password: xxxxxxxxxxxxxxxxxxxxxxx
+    machine urs.earthdata.nasa.gov
+      username htubman
+      password  xxxxxxxxxxxxxxxxxxxxxxx
 
-Read the credentails, extra info will be added to your username and
+Read the credentials, extra info will be added to your username and
 password.
 
 ``` r
@@ -218,7 +221,3 @@ It’s not really a ‘thing’ to pass credentials, too.
 library(ncdf4)
 nc <- try(nc_open(x$URL[1]))
 ```
-
-    ## Error in R_nc4_open: NetCDF: Access failure
-    ## Error in nc_open(x$URL[1]) : 
-    ##   Error in nc_open trying to open file https://opendap.earthdata.nasa.gov/providers/POCLOUD/collections/GHRSST%20Level%204%20MUR%20Global%20Foundation%20Sea%20Surface%20Temperature%20Analysis%20(v4.1)/granules/20210101090000-JPL-L4_GHRSST-SSTfnd-MUR-GLOB-v02.0-fv04.1 (return_on_error= FALSE )
